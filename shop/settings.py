@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "catalog",
     "api",
-    "mytheme",
-    "rest_framework",
+    "theme",
     "tailwind",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -127,10 +127,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TAILWIND_APP_NAME = 'mytheme'
+TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
 TAILWIND_CSS_PATH = 'css/dist/styles.css'
 
 MEDIA_URL = '/media/'
