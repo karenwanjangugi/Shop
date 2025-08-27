@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "catalog",
     "api",
-    "theme",
+    "mytheme",
     "tailwind",
     "rest_framework",
 ]
@@ -127,7 +127,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = 'mytheme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
@@ -136,3 +136,5 @@ TAILWIND_CSS_PATH = 'css/dist/styles.css'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'login'

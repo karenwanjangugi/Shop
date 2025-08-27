@@ -2,37 +2,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.name }}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ product.name }} - Our Awesome Store</title> 
     {% tailwind_css %}
+    <style>
+        
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap'); 
+        
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="md:flex">
-                <div class="md:w-1/2">
+<body class="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen antialiased text-gray-800">
+
+    <div class="container mx-auto px-4 sm:px-6 py-12 md:py-16 max-w-5xl"> 
+        
+        <div class="mb-8 text-left"> 
+            <a href="{% url 'list_products' %}" class="inline-flex items-center text-sky-600 hover:text-sky-800 font-medium group transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Back to Products
+            </a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+            <div class="md:w-1/2 p-2 bg-gray-50">
+                <div class="aspect-[4/3] relative overflow-hidden rounded-xl"> 
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-9 h-9 object-cover">
+                        <img
+                            src="{{ product.image.url }}"
+                            alt="{{ product.name }}"
+                            class="w-full h-full object-cover transition-transform duration-500 ease-in-out hover:scale-105"
+                        />
                     {% else %}
-                        <img src="https://placehold.co/600x400" alt="Placeholder image" class="w-9 h-9 object-cover">
+                        <img
+                            src="https://placehold.co/800x600/e2e8f0/94a3b8?text=Product+Image" /* Improved placeholder */
+                            alt="Placeholder image for {{ product.name }}"
+                            class="w-full h-full object-cover"
+                        />
                     {% endif %}
                 </div>
-                <div class="md:w-1/2 p-8">
-                    <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
-                    <p class="text-gray-700 mb-4">{{ product.description }}</p>
-                    <p class="text-2xl font-bold text-gray-900 mb-6">${{ product.price }}</p>
-                    <div class="flex items-center">
-                        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                            Add to Cart
+            </div>
+
+            <div class="md:w-1/2 p-8 lg:p-12 flex flex-col justify-between">
+                <div>
+                    
+                    <span class="text-xs font-semibold text-sky-600 uppercase tracking-wider mb-2 block">Category</span> 
+                    
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-3 leading-tight">{{ product.name }}</h1>
+                    <p class="text-gray-600 text-base lg:text-lg leading-relaxed mb-6">
+                        {{ product.description|linebreaksbr }} 
+                    </p>
+                    
+                    <div class="mb-8">
+                        <span class="text-gray-500 text-sm mr-2 line-through">${{ product.price|add:"20.00"|floatformat:2 }}</span> 
+                        <span class="text-4xl font-bold text-emerald-600">${{ product.price|floatformat:2 }}</span>
+                        <span class="text-sm text-emerald-700 font-semibold ml-2 p-1 bg-emerald-100 rounded">SAVE 20%</span> 
+                    </div>
+                </div>
+
+              
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <p class="text-sm font-medium text-gray-700 mr-2">Quantity:</p>
+                        <button
+                            id="subtract"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-10 h-10 rounded-md shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 flex items-center justify-center active:bg-gray-300"
+                            aria-label="Decrease quantity"
+                        >
+                            &minus;
+                        </button>
+                        <span
+                            id="quantity"
+                            class="bg-white px-5 py-2 text-gray-800 font-semibold text-lg border border-gray-300 rounded-md w-16 text-center" /* Wider quantity display */
+                            aria-live="polite"
+                            aria-atomic="true"
+                        >
+                        </span>
+                        <button
+                            id="add"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-10 h-10 rounded-md shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 flex items-center justify-center active:bg-gray-300"
+                            aria-label="Increase quantity"
+                        >
+                            &plus;
                         </button>
                     </div>
+                     <p id="stock-info" class="text-xs text-gray-500 ml-1">
+                        {% if product.stock > 0 %}
+                            {{ product.stock }} items in stock
+                        {% else %}
+                            Out of stock
+                        {% endif %}
+                    </p>
+
+                    <button
+                        class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3.5 px-8 rounded-lg shadow-lg hover:shadow-sky-500/30 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Add to cart"
+                        {% if product.stock <= 0 %}disabled{% endif %}
+                    >
+                        {% if product.stock > 0 %}
+                            Add to Cart
+                        {% else %}
+                            Out of Stock
+                        {% endif %}
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="mt-8">
-            <a href="{% url 'list_products' %}" class="text-blue-600 hover:underline">&larr; Back to Products</a>
-        </div>
+
     </div>
+
+    <footer class="text-center py-8 mt-auto">
+        <p class="text-sm text-gray-500">&copy; {% now "Y" %} Moovie Inc. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const subtractButton = document.getElementById('subtract');
+        const addButton = document.getElementById('add');
+        const quantityDisplay = document.getElementById('quantity');
+        const stockInfoDisplay = document.getElementById('stock-info'); 
+        const addToCartButton = document.querySelector('button[aria-label="Add to cart"]');
+
+
+        let currentQuantity = 1; 
+        const maxStock = parseInt("{{ product.stock|default:0 }}");
+
+        function updateQuantityDisplay() {
+            quantityDisplay.textContent = currentQuantity;
+           
+            subtractButton.disabled = currentQuantity <= 1;
+            addButton.disabled = currentQuantity >= maxStock;
+            
+           
+             if (maxStock === 0) {
+                addToCartButton.textContent = 'Out of Stock';
+                addToCartButton.disabled = true;
+            }
+        }
+
+        subtractButton.addEventListener('click', () => {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                updateQuantityDisplay();
+            }
+        });
+
+        addButton.addEventListener('click', () => {
+            if (currentQuantity < maxStock) {
+                currentQuantity++;
+                updateQuantityDisplay();
+            }
+        });
+        
+       
+        if (maxStock === 0) {
+            quantityDisplay.textContent = '0'; 
+            subtractButton.disabled = true;
+            addButton.disabled = true;
+        } else {
+             updateQuantityDisplay(); 
+        }
+
+    </script>
 </body>
 </html>

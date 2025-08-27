@@ -1,36 +1,94 @@
-{% load tailwind_tags %}
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Products</title>
-  {% tailwind_css %}
-</head>
-<body>
-  <h1 class="text-3xl font-bold text-center mb-8">
-    Fresh Products
-  </h1>
+{% extends 'base.html' %}
 
-  <ul class="grid grid-cols-3 gap-6 px-4">
-
-    {% for product in products %}
-    <li class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-      <a href="{% url 'product_detail' id=product.id %}">
-        {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-10 h-10 object-cover rounded-t-lg">
-        {% else %}
-          <img src="https://placehold.co/60x40" alt="Placeholder image" class="w-5 h-10 object-cover rounded-t-lg">
-        {% endif %}
-      </a>
-      <div class="p-6">
-        <a href="{% url 'product_detail' id=product.id %}" class="text-xl font-semibold text-blue-600 hover:underline">
-          {{ product.name }}
-        </a>
-        <p class="mt-2 text-gray-700">Price: <span class="font-medium">${{ product.price }}</span></p>
-        <p class="mt-1 text-gray-600">{{ product.description }}</p>
+{% block content %}
+  <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between gap-1 items-center h-16">
+        <div class=" sm:flex sm:items-center sm:space-x-8">
+          <a class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Home</a>
+          <a class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Products</a>
+          <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Login</a>
+        </div>
+        <div class="sm:hidden">
+          <button type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+        </div>
       </div>
-    </li>
-    {% endfor %}
-  </ul>
-</body>
-</html>
-  
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-extrabold text-center mb-12 text-gray-900 font-inter">
+      Fresh Products
+    </h1>
+
+    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for product in products %}
+        <li>
+          <article 
+            class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 focus-within:ring-4 focus-within:ring-blue-400 focus-within:ring-offset-2 overflow-hidden"
+            tabindex="0"
+            aria-label="Product: {{ product.name }}, price ${{ product.price|floatformat:2 }}"
+          >
+            <a href="{% url 'product_detail' id=product.id %}" 
+              class="block overflow-hidden rounded-t-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500"
+              aria-label="View details of {{ product.name }}"
+            >
+              {% if product.image %}
+                <img
+                  src="{{ product.image.url }}"
+                  alt="{{ product.name }}"
+                  class="bg-orange-800 transform transition-transform duration-300 hover:scale-105"
+                  loading="lazy"
+                  width="300"
+                  height="200"
+                >
+              {% else %}
+                <img
+                  src="https://placehold.co/600x400?text=No+Image"
+                  alt="Placeholder image"
+                  class=" rounded-t-2xl"
+                  loading="lazy"
+                  width="300"
+                  height="200"
+                >
+              {% endif %}
+            </a>
+            <div class="p-6 flex flex-col justify-between h-56">
+              <a href="{% url 'product_detail' id=product.id %}" 
+                class="text-xl font-semibold text-gray-900 hover:text-blue-600 hover:underline transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 font-inter"
+              >
+                {{ product.name }}
+              </a>
+              <p class="mt-2 text-lg text-green-600 font-semibold font-inter">${{ product.price|floatformat:2 }}</p>
+              <p 
+                class="mt-3 text-gray-600 text-sm line-clamp-3 font-inter" 
+                title="{{ product.description }}"
+                aria-label="Product description"
+              >
+                {{ product.description }}
+              </p>
+            </div>
+          </article>
+        </li>
+      {% empty %}
+        <li class="col-span-full text-center text-gray-500 text-lg font-inter py-12">
+          No products found. Start adding some!
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a href="{% url 'create_product' %}"
+      class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 text-white font-semibold px-6 py-4 rounded-full shadow-lg transition duration-300 z-50 font-inter"
+      aria-label="Add new product"
+    >
+      <svg class="inline w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 4v16m8-8H4"></path>
+      </svg>
+      Add Product
+    </a>
+  </main>
+{% endblock %}
