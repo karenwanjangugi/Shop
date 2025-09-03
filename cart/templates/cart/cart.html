@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
+
+    body {
+        background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+        font-family: 'Inter', sans-serif;
+        color: #1a202c;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2rem 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .container {
+            padding: 3rem 1.5rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .container {
+            padding: 4rem 2rem;
+        }
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 4rem 0;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .empty-cart h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    @media (min-width: 640px) {
+        .empty-cart h1 {
+            font-size: 3rem;
+        }
+    }
+
+    .empty-cart p {
+        font-size: 1.125rem;
+        color: #4b5563;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-cart a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .empty-cart a:hover {
+        color: #2563eb;
+        transform: translateY(-2px);
+    }
+
+    .cart-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #111827;
+        text-align: center;
+        margin-bottom: 3rem;
+        line-height: 1.2;
+    }
+
+    @media (min-width: 640px) {
+        .cart-title {
+            font-size: 3rem;
+        }
+    }
+
+    .cart-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+        .cart-layout {
+            flex-direction: row;
+        }
+    }
+
+    .cart-table-container {
+        flex: 1;
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @media (min-width: 1024px) {
+        .cart-table-container {
+            max-width: 50%;
+        }
+    }
+
+    .checkout-container {
+        flex: 1;
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+        .checkout-container {
+            max-width: 50%;
+        }
+    }
+
+    .table {
+        width: 100%;
+        margin: 0;
+        color: #1a202c;
+        border-collapse: collapse;
+        font-size: 1rem;
+    }
+
+    .table thead th {
+        vertical-align: middle;
+        border-bottom: 2px solid #e5e7eb;
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: #ffffff;
+        background: linear-gradient(to right, #6b7280, #4b5563);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-top: 1px solid #e5e7eb;
+        transition: background-color 0.3s ease;
+    }
+
+    .table tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .product-image:hover {
+        transform: scale(1.05);
+    }
+
+    .product-details {
+        text-align: left;
+        font-size: 1rem;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-sku {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .product-price {
+        color: #10b981;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .subtotal {
+        font-weight: 600;
+        color: #111827;
+        text-align: center;
+        font-size: 1.125rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 0.875rem;
+    }
+
+    .btn-success {
+        background: linear-gradient(to right, #10b981, #059669);
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(to right, #059669, #047857);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-warning {
+        background: linear-gradient(to right, #f59e0b, #d97706);
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-warning:hover {
+        background: linear-gradient(to right, #d97706, #b45309);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-danger {
+        background: linear-gradient(to right, #ef4444, #dc2626);
+        color: #ffffff;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(to right, #dc2626, #b91c1c);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .checkout-text {
+        font-size: 1rem;
+        color: #4b5563;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .total-row {
+        text-align: left;
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .total-row strong {
+        color: #10b981;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    @media (min-width: 640px) {
+        .button-group {
+            flex-direction: row;
+            justify-content: center;
+        }
+    }
+
+    .continue-shopping, .proceed-checkout {
+        background: linear-gradient(to right, #6b7280, #4b5563);
+        color: #ffffff;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        text-align: center;
+    }
+
+    .proceed-checkout {
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+    }
+
+    .continue-shopping:hover, .proceed-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+    }
+
+    .continue-shopping:hover {
+        background: linear-gradient(to right, #4b5563, #374151);
+    }
+
+    .proceed-checkout:hover {
+        background: linear-gradient(to right, #2563eb, #1e40af);
+    }
+
+    .continue-shopping:focus, .proceed-checkout:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    }
+</style>
+
+<div class="container">
+    {% if not cart_items %}
+        <div class="empty-cart">
+            <h1>Your Shopping Cart is Empty</h1>
+            <p>
+                Please click <a href="{% url 'list_products' %}">here</a> to continue shopping.
+            </p>
+        </div>
+    {% else %}
+        <h1 class="cart-title">Your Shopping Cart</h1>
+        <div class="cart-layout">
+            <div class="cart-table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="header-cell">
+                                Your Items
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                            <tr>
+                                <td>
+                                    <a href="{{ cart_item.product.get_url }}"><img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" class="product-image"></a>
+                                </td>
+                                <td class="product-details">
+                                    <div class="product-name">{{ cart_item.product.name }}</div>
+                                    <div class="product-sku">SKU: {{ cart_item.product.id }}</div>
+                                    <div class="product-price">Price: ${{ cart_item.product.price|floatformat:2 }}</div>
+                                    <div class="product-price">Quantity: {{ cart_item.quantity }} x ${{ cart_item.product.price|floatformat:2 }}</div>
+                                </td>
+                                <td class="subtotal">
+                                    ${{ cart_item.sub_total|floatformat:2 }}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        {% if cart_item.quantity < cart_item.product.stock %}
+                                            <a href="{% url 'add_cart' cart_item.product.id %}" class="btn btn-success" aria-label="Increase quantity">+</a>
+                                        {% endif %}
+                                        <a href="{% url 'remove_cart_item' cart_item.product.id %}" class="btn btn-warning" aria-label="Decrease quantity">-</a>
+                                        <a href="{% url 'remove_cart' cart_item.product.id %}" class="btn btn-danger" aria-label="Remove item">x</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="checkout-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="header-cell">
+                                Checkout
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="checkout-text">
+                                Please review your shopping cart items before proceeding with the order payment.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="total-row">
+                                Your total is: <strong>${{ total|floatformat:2 }}</strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <a href="{% url 'list_products' %}" class="continue-shopping">Continue Shopping</a>
+                    <a class="proceed-checkout">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

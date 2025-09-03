@@ -1,94 +1,457 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <nav class="bg-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between gap-1 items-center h-16">
-        <div class=" sm:flex sm:items-center sm:space-x-8">
-          <a class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Home</a>
-          <a class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Products</a>
-          <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 font-medium transition duration-200">Login</a>
-        </div>
-        <div class="sm:hidden">
-          <button type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap');
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-extrabold text-center mb-12 text-gray-900 font-inter">
-      Fresh Products
-    </h1>
+    body {
+        background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+        font-family: 'Inter', sans-serif;
+        color: #1a202c;
+        margin: 0;
+    }
 
-    <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {% for product in products %}
-        <li>
-          <article 
-            class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 focus-within:ring-4 focus-within:ring-blue-400 focus-within:ring-offset-2 overflow-hidden"
-            tabindex="0"
-            aria-label="Product: {{ product.name }}, price ${{ product.price|floatformat:2 }}"
-          >
-            <a href="{% url 'product_detail' id=product.id %}" 
-              class="block overflow-hidden rounded-t-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500"
-              aria-label="View details of {{ product.name }}"
-            >
-              {% if product.image %}
-                <img
-                  src="{{ product.image.url }}"
-                  alt="{{ product.name }}"
-                  class="bg-orange-800 transform transition-transform duration-300 hover:scale-105"
-                  loading="lazy"
-                  width="300"
-                  height="200"
-                >
-              {% else %}
-                <img
-                  src="https://placehold.co/600x400?text=No+Image"
-                  alt="Placeholder image"
-                  class=" rounded-t-2xl"
-                  loading="lazy"
-                  width="300"
-                  height="200"
-                >
-              {% endif %}
-            </a>
-            <div class="p-6 flex flex-col justify-between h-56">
-              <a href="{% url 'product_detail' id=product.id %}" 
-                class="text-xl font-semibold text-gray-900 hover:text-blue-600 hover:underline transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 font-inter"
-              >
-                {{ product.name }}
-              </a>
-              <p class="mt-2 text-lg text-green-600 font-semibold font-inter">${{ product.price|floatformat:2 }}</p>
-              <p 
-                class="mt-3 text-gray-600 text-sm line-clamp-3 font-inter" 
-                title="{{ product.description }}"
-                aria-label="Product description"
-              >
-                {{ product.description }}
-              </p>
+    .navbar {
+        background: linear-gradient(to bottom, #ffffff, #f8fafc);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+    }
+
+    .navbar-container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .navbar-container {
+            padding: 0 1.5rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .navbar-container {
+            padding: 0 2rem;
+        }
+    }
+
+    .navbar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 4rem;
+        gap: 0.25rem;
+    }
+
+    .nav-links {
+        display: none;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+        .nav-links {
+            display: flex;
+        }
+    }
+
+    .nav-link {
+        color: #374151;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: color 0.2s ease, transform 0.2s ease;
+        padding: 0.5rem;
+    }
+
+    .nav-link:hover {
+        color: #2563eb;
+        transform: translateY(-2px);
+    }
+
+    .nav-link:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        border-radius: 0.25rem;
+    }
+
+    .mobile-menu-toggle {
+        display: none;
+    }
+
+    .mobile-menu-button {
+        display: flex;
+        color: #374151;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    @media (min-width: 640px) {
+        .mobile-menu-button {
+            display: none;
+        }
+    }
+
+    .mobile-menu-button:hover {
+        color: #2563eb;
+    }
+
+    .mobile-menu-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #3b82f6;
+        border-radius: 0.25rem;
+    }
+
+    .mobile-menu-button svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .mobile-menu {
+        display: none;
+        position: absolute;
+        top: 4rem;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        transform: translateY(-10px);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        z-index: 40;
+    }
+
+    .mobile-menu-toggle:checked ~ .mobile-menu {
+        display: block;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .mobile-menu .nav-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .main-content {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 3rem 1rem;
+    }
+
+    @media (min-width: 640px) {
+        .main-content {
+            padding: 3rem 1.5rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .main-content {
+            padding: 3rem 2rem;
+        }
+    }
+
+    .main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #111827;
+        text-align: center;
+        margin-bottom: 3rem;
+        line-height: 1.2;
+    }
+
+    @media (min-width: 640px) {
+        .main-title {
+            font-size: 3rem;
+        }
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    @media (min-width: 640px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    .product-card {
+        background-color: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .product-card:nth-child(1) { animation-delay: 0.1s; }
+    .product-card:nth-child(2) { animation-delay: 0.2s; }
+    .product-card:nth-child(3) { animation-delay: 0.3s; }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card:focus-within {
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .product-image-link {
+        display: block;
+        overflow: hidden;
+        border-top-left-radius: 1.25rem;
+        border-top-right-radius: 1.25rem;
+        position: relative;
+    }
+
+    .product-image-link:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px #3b82f6;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+        background-color: #f9fafb;
+    }
+
+    .product-image-link:hover .product-image {
+        transform: scale(1.08);
+    }
+
+    .product-details {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        height: auto;
+        min-height: 14rem;
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .product-title:hover {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+
+    .product-title:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #3b82f6;
+        border-radius: 0.25rem;
+    }
+
+    .product-price {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #10b981;
+    }
+
+    .product-description {
+        font-size: 0.875rem;
+        color: #4b5563;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        text-align: center;
+        margin-top: auto;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #2563eb, #1e40af);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .no-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: #6b7280;
+        font-size: 1.125rem;
+        padding: 3rem 0;
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    .add-product-button {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 9999px;
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        z-index: 50;
+    }
+
+    .add-product-button:hover {
+        background: linear-gradient(to right, #2563eb, #1e40af);
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .add-product-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    }
+
+    .add-product-button svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 0.5rem;
+    }
+</style>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-content">
+            <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle">
+            <label for="mobile-menu-toggle" class="mobile-menu-button">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </label>
+            <div class="nav-links">
+                <a href="{% url 'list_products' %}" class="nav-link">Home</a>
+                <a href="{% url 'list_products' %}" class="nav-link">Products</a>
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
             </div>
-          </article>
-        </li>
-      {% empty %}
-        <li class="col-span-full text-center text-gray-500 text-lg font-inter py-12">
-          No products found. Start adding some!
-        </li>
-      {% endfor %}
+            <div class="mobile-menu">
+                <div class="nav-links">
+                    <a href="{% url 'list_products' %}" class="nav-link">Home</a>
+                    <a href="{% url 'list_products' %}" class="nav-link">Products</a>
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="main-content">
+    <h1 class="main-title">Fresh Products</h1>
+
+    <ul class="product-grid">
+        {% for product in products %}
+            <li>
+                <article 
+                    class="product-card"
+                    tabindex="0"
+                    aria-label="Product: {{ product.name }}, price ${{ product.price|floatformat:2 }}"
+                >
+                    <a href="{% url 'product_detail' id=product.id %}" 
+                        class="product-image-link"
+                        aria-label="View details of {{ product.name }}"
+                    >
+                        {% if product.image %}
+                            <img
+                                src="{{ product.image.url }}"
+                                alt="{{ product.name }}"
+                                class="product-image"
+                                loading="lazy"
+                                width="300"
+                                height="200"
+                            >
+                        {% else %}
+                            <img
+                                src="https://placehold.co/600x400?text=No+Image"
+                                alt="Placeholder image"
+                                class="product-image"
+                                loading="lazy"
+                                width="300"
+                                height="200"
+                            >
+                        {% endif %}
+                    </a>
+                    <div class="product-details">
+                        <a href="{% url 'product_detail' id=product.id %}" 
+                            class="product-title"
+                        >
+                            {{ product.name }}
+                        </a>
+                        <p class="product-price">${{ product.price|floatformat:2 }}</p>
+                        <p 
+                            class="product-description"
+                            title="{{ product.description }}"
+                            aria-label="Product description"
+                        >
+                            {{ product.description }}
+                        </p>
+                        <a href="{% url 'add_cart' product.id %}" class="btn-primary">Add to Cart</a>
+                    </div>
+                </article>
+            </li>
+        {% empty %}
+            <li class="no-products">
+                No products found. Start adding some!
+            </li>
+        {% endfor %}
     </ul>
 
     <a href="{% url 'create_product' %}"
-      class="fixed bottom-8 right-8 bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 text-white font-semibold px-6 py-4 rounded-full shadow-lg transition duration-300 z-50 font-inter"
-      aria-label="Add new product"
+        class="add-product-button"
+        aria-label="Add new product"
     >
-      <svg class="inline w-6 h-6 mr-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 4v16m8-8H4"></path>
-      </svg>
-      Add Product
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Product
     </a>
-  </main>
+</main>
 {% endblock %}

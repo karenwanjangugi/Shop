@@ -62,50 +62,15 @@
                 </div>
 
               
-                <div class="space-y-6">
-                    <div class="flex items-center space-x-3">
-                        <p class="text-sm font-medium text-gray-700 mr-2">Quantity:</p>
-                        <button
-                            id="subtract"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-10 h-10 rounded-md shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 flex items-center justify-center active:bg-gray-300"
-                            aria-label="Decrease quantity"
-                        >
-                            &minus;
-                        </button>
-                        <span
-                            id="quantity"
-                            class="bg-white px-5 py-2 text-gray-800 font-semibold text-lg border border-gray-300 rounded-md w-16 text-center" /* Wider quantity display */
-                            aria-live="polite"
-                            aria-atomic="true"
-                        >
-                        </span>
-                        <button
-                            id="add"
-                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-10 h-10 rounded-md shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-opacity-50 flex items-center justify-center active:bg-gray-300"
-                            aria-label="Increase quantity"
-                        >
-                            &plus;
-                        </button>
-                    </div>
-                     <p id="stock-info" class="text-xs text-gray-500 ml-1">
-                        {% if product.stock > 0 %}
-                            {{ product.stock }} items in stock
-                        {% else %}
-                            Out of stock
-                        {% endif %}
-                    </p>
+                
 
-                    <button
-                        class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3.5 px-8 rounded-lg shadow-lg hover:shadow-sky-500/30 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Add to cart"
-                        {% if product.stock <= 0 %}disabled{% endif %}
-                    >
+                    <a href="{% url 'add_cart' product.id %}" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3.5 px-8 rounded-lg shadow-lg hover:shadow-sky-500/30 focus:outline-none focus:ring-4 focus:ring-sky-500 focus:ring-opacity-50 transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Add to cart" {% if product.stock <= 0 %}disabled{% endif %}>
                         {% if product.stock > 0 %}
                             Add to Cart
                         {% else %}
                             Out of Stock
                         {% endif %}
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -116,53 +81,6 @@
         <p class="text-sm text-gray-500">&copy; {% now "Y" %} Moovie Inc. All rights reserved.</p>
     </footer>
 
-    <script>
-        const subtractButton = document.getElementById('subtract');
-        const addButton = document.getElementById('add');
-        const quantityDisplay = document.getElementById('quantity');
-        const stockInfoDisplay = document.getElementById('stock-info'); 
-        const addToCartButton = document.querySelector('button[aria-label="Add to cart"]');
-
-
-        let currentQuantity = 1; 
-        const maxStock = parseInt("{{ product.stock|default:0 }}");
-
-        function updateQuantityDisplay() {
-            quantityDisplay.textContent = currentQuantity;
-           
-            subtractButton.disabled = currentQuantity <= 1;
-            addButton.disabled = currentQuantity >= maxStock;
-            
-           
-             if (maxStock === 0) {
-                addToCartButton.textContent = 'Out of Stock';
-                addToCartButton.disabled = true;
-            }
-        }
-
-        subtractButton.addEventListener('click', () => {
-            if (currentQuantity > 1) {
-                currentQuantity--;
-                updateQuantityDisplay();
-            }
-        });
-
-        addButton.addEventListener('click', () => {
-            if (currentQuantity < maxStock) {
-                currentQuantity++;
-                updateQuantityDisplay();
-            }
-        });
-        
-       
-        if (maxStock === 0) {
-            quantityDisplay.textContent = '0'; 
-            subtractButton.disabled = true;
-            addButton.disabled = true;
-        } else {
-             updateQuantityDisplay(); 
-        }
-
-    </script>
+    
 </body>
 </html>
